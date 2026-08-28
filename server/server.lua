@@ -32,7 +32,7 @@ local function log(message, sender, fristTime)
 		print("\n")
 	end
 	term.setTextColor(colors.gray)
-	print(textutils.formatTime(sender.." ("..os.time()).." Day "..os.day()..")")
+	print(sender.." ("..textutils.formatTime(os.time()).." Day "..os.day()..")")
 	term.setTextColor(colors.white)
 	write(message)
 end
