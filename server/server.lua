@@ -25,13 +25,14 @@ rednet.open(modemName)
 
 --- Prints out a message with a timestamp
 --- @param message string The message to print
+--- @param sender string Who is sending the message (for debugging)
 --- @param fristTime boolean?
-local function log(message, fristTime)
+local function log(message, sender, fristTime)
 	if not fristTime then
 		print("\n")
 	end
 	term.setTextColor(colors.gray)
-	print(textutils.formatTime(os.time()).." Day "..os.day())
+	print(textutils.formatTime(sender.." ("..os.time()).." Day "..os.day()..")")
 	term.setTextColor(colors.white)
 	write(message)
 end
@@ -64,7 +65,7 @@ local function ping(sender, id)
 		},
 		"HiveStorage"
 	)
-	log("Got pinged by "..sender)
+	log("Got pinged", sender)
 end
 
 local function emptyPocket(sender)
@@ -72,7 +73,7 @@ local function emptyPocket(sender)
 	repeat
 		pocket.makePackage()
 	until next(pocket.list()) == nil
-	log("Got asked to empty the pocket by "..sender)
+	log("Emptied the pocket", sender)
 end
 
 ---------------------------------------------------
@@ -88,12 +89,12 @@ local function listenForRequests()
 		elseif message.command == "emptyPocket" then
 			emptyPocket(message.sender)
 		else
-			log("Got something weird from computer ID "..id..":\n"..textutils.serialize(message))
+			log("Got something weird:\n"..textutils.serialize(message), "Computer ID "..id)
 		end
 	end
 end
 
-log("Started running", true)
+log("Started running", "Server", true)
 local ok, errorMessage = xpcall(listenForRequests, debug.traceback) -- I'm not super sure what a `xpcall` is but Copilot said to use it so that the modem will actually close when the program breaks. -- It looks a lot like a try catch?
 
 rednet.close(modemName)
