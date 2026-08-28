@@ -1,0 +1,1 @@
+This code was made for my single player world. Security (and multi-player more broadly) is not a priority for me right now.

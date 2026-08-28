@@ -108,6 +108,3 @@ if not ok then
 	term.setTextColor(colors.white)
 	print(errorMessage)
 end
-
-sleep(10)
-os.reboot()
