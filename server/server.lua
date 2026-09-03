@@ -37,18 +37,6 @@ local function log(message, sender, fristTime)
 	write(message)
 end
 
---- Returns a unentangled copy 
---- @param table table
---- @return table
-local function copyTable(table)
-	return copiedTable
-end
-
---- Works the same as table.sort but returns instead of modifying
-local function safeSort()
-
-end
-
 ---------------------------------------------------
 --                Handle requests                --
 ---------------------------------------------------
@@ -88,6 +76,20 @@ local function listenForRequests()
 			ping(message.sender, id)
 		elseif message.command == "emptyPocket" then
 			emptyPocket(message.sender)
+		elseif message.command == "getStock" then
+			rednet.send(
+				id,
+				{
+					sender = "Server",
+					command = "success",
+					arguments = {
+						successful = "getStock",
+						returnValue = stock.stock(true)
+					}
+				},
+				"HiveStorage"
+			)
+			log("Checked storage", message.sender)
 		else
 			log("Got something weird:\n"..textutils.serialize(message), "Computer ID "..id)
 		end
