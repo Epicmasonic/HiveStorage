@@ -93,7 +93,7 @@ local function borderedPrint(startX, width, line, message, backgroundColor, fore
 	end
 	
 	local oldX, oldY = term.getCursorPos()
-
+	
 	stamp(startX, line, "\x95", foregroundColor, backgroundColor)
 	stamp(startX + width - 1, line, "\x95", backgroundColor, foregroundColor)
 	term.setCursorPos(startX + 1, line)
@@ -104,8 +104,64 @@ end
 
 local function shortenString(message, maxLength)
 	if #message <= maxLength then
+		while #message < maxLength do
+			message = message.." "
+		end
 		return message
 	end
+	
+	local shortString = ""
+	for i = 1, #message do
+		if #shortString + 3 >= maxLength then
+			return shortString.."..."
+		end
+		shortString = shortString..string.sub(message, i, i)
+	end
+	return shortString -- Should never run?
+end
+
+local function shortenNumber(amount, size)
+	if not size then
+		size = " "
+	end
+	
+	if amount >= 1000 then
+		amount = math.floor(amount / 1000)
+		if size == " " then
+			return shortenNumber(amount, "K")
+		elseif size == "K" then
+			return shortenNumber(amount, "M")
+		elseif size == "M" then
+			return shortenNumber(amount, "B")
+		elseif size == "B" then
+			return shortenNumber(amount, "T")
+		else
+			return "LOTS"
+		end
+	end
+	
+	local amountString
+	if amount >= 100 then
+		amountString = textutils.serialize(amount)..size
+	elseif amount >= 10 then
+		amountString = " "..textutils.serialize(amount)..size
+	else
+		amountString = "  "..textutils.serialize(amount)..size
+	end
+
+	if size == " " then
+		return " "..string.sub(amountString, 1, 3)
+	else
+		return amountString
+	end
+end
+
+local function printItemOverview(line, width, name, amount, selected)
+	if selected then
+		name = ">"..name
+	end
+	
+	borderedPrint(2, width, line + 2, shortenString(name, width - 7).."|"..shortenNumber(amount))
 end
 
 ---------------------------------------------------
@@ -116,7 +172,9 @@ term.clear()
 local screenWidth, screenHeight = term.getSize()
 
 drawBorder(2, 2, screenWidth - 2, screenHeight - 2)
-borderedPrint(2, screenWidth - 2, 3, "Test")
+for i = 1, screenHeight - 4 do
+	printItemOverview(i, screenWidth - 2, itemList[i].displayName, itemList[i].count, i == 1)
+end
 
 term.setCursorPos(1, screenHeight)
 sleep(10)
