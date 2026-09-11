@@ -121,9 +121,8 @@ local function shortenString(message, maxLength)
 end
 
 local function shortenNumber(amount, size)
-	if not size then
-		size = " "
-	end
+	if type(amount) ~= "number" then return "    " end
+	if not size then size = " " end
 	
 	if amount >= 1000 then
 		amount = math.floor(amount / 1000)
@@ -157,11 +156,31 @@ local function shortenNumber(amount, size)
 end
 
 local function printItemOverview(line, width, name, amount, selected)
-	if selected then
-		name = ">"..name
-	end
+	if type(name) ~= "string" then name = textutils.serialize(name) end
+	if selected then name = ">"..name end
 	
 	borderedPrint(2, width, line + 2, shortenString(name, width - 7).."|"..shortenNumber(amount))
+end
+
+local function drawFullItemOverview(startX, startY, width, height, items, selected)
+	drawBorder(startX, startY, width, height)
+	local pageSize = height - 2
+	local currentPage = math.floor((selected - 1) / pageSize)
+	local pageOffset = currentPage * pageSize
+	
+	local modifyedSelected = selected % pageSize
+	if modifyedSelected == 0 then modifyedSelected = pageSize end
+	
+	for i = 1, pageSize do
+		-- printItemOverview(i, width, textutils.serialize(modifyedSelected), 1, i == selected)
+		local item = items[i + pageOffset]
+		
+		if item then
+			printItemOverview(i, width, item.displayName, item.count, i == modifyedSelected)
+		else
+			printItemOverview(i, width, "", nil, false)
+		end
+	end
 end
 
 ---------------------------------------------------
@@ -170,11 +189,58 @@ end
 
 term.clear()
 local screenWidth, screenHeight = term.getSize()
+local currentSelection = 1
 
-drawBorder(2, 2, screenWidth - 2, screenHeight - 2)
-for i = 1, screenHeight - 4 do
-	printItemOverview(i, screenWidth - 2, itemList[i].displayName, itemList[i].count, i == 1)
+while true do
+	term.clear()
+	drawFullItemOverview(2, 2, screenWidth - 2, screenHeight - 2, itemList, currentSelection)
+
+	-- Wait for a key press event
+	local event, param = os.pullEvent("key")
+
+	-- Check which key was pressed
+	if param == keys.q then
+		term.setCursorPos(1, screenHeight)
+		write("Quitting program.")
+		sleep(1)
+		break
+	elseif param == keys.r then
+		term.setCursorPos(1, screenHeight)
+		write("Rebooting.")
+		sleep(1)
+		os.reboot()
+	elseif param == keys.up then
+		currentSelection = currentSelection - 1
+		if currentSelection <= 0 then currentSelection = #itemList end
+	elseif param == keys.down then
+		currentSelection = currentSelection + 1
+		if currentSelection > #itemList then currentSelection = 1 end
+--	elseif param == keys.left then
+--		currentSelection = currentSelection - (screenHeight - 4)
+--		if currentSelection <= 0 then currentSelection = #itemList end
+--	elseif param == keys.right then
+--		currentSelection = currentSelection + (screenHeight - 4)
+--		if currentSelection > #itemList then currentSelection = 1 end
+	elseif param == keys.f then
+		rednet.open("back")
+		rednet.broadcast(
+			{
+				sender = myName,
+				command = "emptyPocket"
+			},
+			"HiveStorage"
+		)
+		rednet.close()
+		
+		term.setCursorPos(1, screenHeight)
+		write("Emptied the pocket")
+		sleep(1)
+	else
+		term.setCursorPos(1, screenHeight)
+		write(shortenString("Key code pressed: " .. keys.getName(param), screenWidth))
+		sleep(1)
+	end
 end
 
-term.setCursorPos(1, screenHeight)
-sleep(10)
+term.clear()
+term.setCursorPos(1, 1)
