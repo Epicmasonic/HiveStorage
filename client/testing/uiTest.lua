@@ -25,8 +25,13 @@ repeat
 until message and message.arguments.successful == "getStock"
 rednet.close()
 local itemList = message.arguments.returnValue
+assert(#itemList > 1, "What do you mean it's empty!?")
 table.sort(itemList, function (a, b)
-	return a.count > b.count
+	if a.count ~= b.count then
+		return a.count > b.count
+	end
+	-- Sort alphabetically
+	return string.lower(a.displayName) < string.lower(b.displayName) -- You can just do that!?!?
 end)
 
 ---------------------------------------------------
@@ -181,6 +186,13 @@ local function drawFullItemOverview(startX, startY, width, height, items, select
 			printItemOverview(i, width, "", nil, false)
 		end
 	end
+	
+	term.setCursorPos(startX + 2, startY)
+	write(" "..math.floor(selected / pageSize)+1 .." / "..math.floor(#items / pageSize)+1 .." ")
+	
+	-- Debug stuff
+--	term.setCursorPos(1, 1)
+--	write(selected..", "..pageSize..", "..selected % pageSize..", "..math.floor(selected / pageSize)..", "..math.floor(#items / pageSize))
 end
 
 ---------------------------------------------------
@@ -215,12 +227,19 @@ while true do
 	elseif param == keys.down then
 		currentSelection = currentSelection + 1
 		if currentSelection > #itemList then currentSelection = 1 end
---	elseif param == keys.left then
---		currentSelection = currentSelection - (screenHeight - 4)
---		if currentSelection <= 0 then currentSelection = #itemList end
---	elseif param == keys.right then
---		currentSelection = currentSelection + (screenHeight - 4)
---		if currentSelection > #itemList then currentSelection = 1 end
+	elseif param == keys.left then
+		currentSelection = currentSelection - (screenHeight - 4)
+		if currentSelection <= 0 then
+			local lastPageSize = #itemList % screenHeight - 4
+			if lastPageSize == 0 then lastPageSize = #itemList end
+			currentSelection = #itemList - lastPageSize + currentSelection + (screenHeight - 4)
+			if currentSelection > #itemList then currentSelection = #itemList end
+		end
+	elseif param == keys.right then
+		currentSelection = currentSelection + (screenHeight - 4)
+		if currentSelection > #itemList then
+			currentSelection = currentSelection % (screenHeight - 4)
+		end
 	elseif param == keys.f then
 		rednet.open("back")
 		rednet.broadcast(
@@ -235,10 +254,27 @@ while true do
 		term.setCursorPos(1, screenHeight)
 		write("Emptied the pocket")
 		sleep(1)
-	else
+	elseif param == keys.enter then
+		rednet.open("back")
+		rednet.broadcast(
+			{
+				sender = myName,
+				command = "pocketRequest",
+				arguments = {
+					item = itemList[currentSelection]
+				}
+			},
+			"HiveStorage"
+		)
+		rednet.close()
+
 		term.setCursorPos(1, screenHeight)
-		write(shortenString("Key code pressed: " .. keys.getName(param), screenWidth))
+		write(shortenString(itemList[currentSelection].name, screenWidth))
 		sleep(1)
+--	else
+--		term.setCursorPos(1, screenHeight)
+--		write(shortenString("Key code pressed: " .. keys.getName(param), screenWidth))
+--		sleep(1)
 	end
 end
 

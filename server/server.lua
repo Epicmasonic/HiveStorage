@@ -64,6 +64,14 @@ local function emptyPocket(sender)
 	log("Emptied the pocket", sender)
 end
 
+local function pocketRequest(sender, item)
+	local count = stock.requestFiltered("Pocket", {
+		name = item.name,
+		_requestCount = item.maxCount
+	})
+	log("Sent "..count.." "..item.name.."(s) to the pocket", sender)
+end
+
 ---------------------------------------------------
 --       The stuff that will actually run        --
 ---------------------------------------------------
@@ -76,6 +84,8 @@ local function listenForRequests()
 			ping(message.sender, id)
 		elseif message.command == "emptyPocket" then
 			emptyPocket(message.sender)
+		elseif message.command == "pocketRequest" then
+			pocketRequest(message.sender, message.arguments.item)
 		elseif message.command == "getStock" then
 			rednet.send(
 				id,
