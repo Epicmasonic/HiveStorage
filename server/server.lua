@@ -66,10 +66,11 @@ end
 
 local function pocketRequest(sender, item)
 	local count = stock.requestFiltered("Pocket", {
+		_requestCount = item.maxCount,
 		name = item.name,
-		_requestCount = item.maxCount
+		displayName = item.displayName
 	})
-	log("Sent "..count.." "..item.name.."(s) to the pocket", sender)
+	log("Sent "..count.." copies of "..item.displayName.." to the pocket", sender)
 end
 
 ---------------------------------------------------
