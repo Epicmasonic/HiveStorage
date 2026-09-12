@@ -269,7 +269,8 @@ while true do
 		rednet.close()
 
 		term.setCursorPos(1, screenHeight)
-		write(shortenString(itemList[currentSelection].name, screenWidth))
+--		write(shortenString(itemList[currentSelection].name, screenWidth))
+		write(shortenString("Requested "..itemList[currentSelection].displayName, screenWidth))
 		sleep(1)
 --	else
 --		term.setCursorPos(1, screenHeight)
