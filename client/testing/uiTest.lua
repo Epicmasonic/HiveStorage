@@ -25,7 +25,6 @@ repeat
 until message and message.arguments.successful == "getStock"
 rednet.close()
 local itemList = message.arguments.returnValue
-assert(#itemList > 1, "What do you mean it's empty!?")
 table.sort(itemList, function (a, b)
 	if a.count ~= b.count then
 		return a.count > b.count
