@@ -44,7 +44,7 @@ end
 local currentSelection = 1
 local sortMode = "amount"
 local searchQuery = ""
-local searchHistory = {}
+local searchHistory = {""}
 
 while true do
 	term.clear()
