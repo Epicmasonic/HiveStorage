@@ -122,10 +122,20 @@ local function shortenNumber(amount, size)
 	end
 end
 
+local function infoLog(message)
+	if type(message) ~= "string" then message = textutils.serialize(message) end
+	local screenWidth, screenHeight = term.getSize()
+	
+	term.setCursorPos(1, screenHeight)
+	write(shortenString(message, screenWidth))
+	sleep(1)
+end
+
 return {
 --	stamp = stamp,
 	drawBorder = drawBorder,
 	borderedPrint = borderedPrint,
 	shortenString = shortenString,
-	shortenNumber = shortenNumber
+	shortenNumber = shortenNumber,
+	infoLog = infoLog
 }

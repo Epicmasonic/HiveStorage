@@ -33,15 +33,6 @@ local function drawFullItemOverview(startX, startY, width, height, items, select
 	write(" "..math.floor(selected / pageSize)+1 .." / "..math.floor(#items / pageSize)+1 .." ")
 end
 
-local function infoLog(message)
-	if type(message) ~= "string" then message = textutils.serialize(message) end
-	local screenWidth, screenHeight = term.getSize()
-	
-	term.setCursorPos(1, screenHeight)
-	write(ui.shortenString(message, screenWidth))
-	sleep(1)
-end
-
 local function navagateUp(itemList, selection)
 	selection = selection - 1
 	if selection <= 0 then selection = #itemList end
@@ -90,7 +81,6 @@ return {
 		local screenWidth, screenHeight = term.getSize()
 		drawFullItemOverview(2, 2, screenWidth - 2, screenHeight - 2, itemList, currentSelection)
 	end,
-	infoLog = infoLog,
 	navagate = {
 		up = navagateUp,
 		down = navagateDown,
