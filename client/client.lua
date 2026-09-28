@@ -46,6 +46,15 @@ local sortMode = "amount"
 local searchQuery = ""
 local searchHistory = {}
 
+local function reloadItemList()
+	local selectedItem = modifiedItemList[currentSelection]
+	
+	itemList = server.getItems()
+	modifiedItemList = data.copyTable(itemList)
+	sort(modifiedItemList, sortMode)
+	currentSelection = findItemSelection(modifiedItemList, selectedItem)
+end
+
 while true do
 	term.clear()
 	pages.collection.draw(modifiedItemList, currentSelection)
@@ -55,8 +64,8 @@ while true do
 		ui.infoLog("Quitting program.")
 		break
 	elseif key == keys.r then
-		ui.infoLog("Rebooting.")
-		os.reboot()
+		ui.infoLog("Reloading items.")
+		reloadItemList()
 	elseif key == keys.up then
 		currentSelection = pages.collection.navagate.up(modifiedItemList, currentSelection)
 	elseif key == keys.down then
@@ -77,17 +86,12 @@ while true do
 		searchQuery = read(nil, searchHistory, nil, searchQuery)
 		table.insert(searchHistory, searchQuery)
 		
-		local selectedItem = modifiedItemList[currentSelection]
-		modifiedItemList = data.search(itemList, searchQuery)
-		sort(modifiedItemList, sortMode)
-		
-		currentSelection = findItemSelection(modifiedItemList, selectedItem)
+		reloadItemList()
 	elseif key == keys.f then
 		server.emptyPocket()
 		ui.infoLog("Emptied the pocket")
 	elseif key == keys.enter then
 		local requestedItem = modifiedItemList[currentSelection]
-		
 		
 		-- So that the key you used to open the search bar doesn't get put into it as well
 		local releasedKey
@@ -100,11 +104,13 @@ while true do
 		local requestedAmount = tonumber(read())
 		
 		server.requestItem(requestedItem, requestedAmount)
-		if requestedAmount then 
-			ui.infoLog("Requested "..requestedAmount.." copies of "..requestedItem.displayName)
+		if requestedAmount then
+			ui.infoLog("Requested "..requestedAmount.."x "..requestedItem.displayName)
 		else
 			ui.infoLog("Requested "..requestedItem.displayName)
 		end
+		
+		reloadItemList()
 --	else
 --		ui.infoLog("Key code pressed: " .. keys.getName(param))
 	end
