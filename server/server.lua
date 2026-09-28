@@ -64,9 +64,9 @@ local function emptyPocket(sender)
 	log("Emptied the pocket", sender)
 end
 
-local function pocketRequest(sender, item)
+local function pocketRequest(sender, item, amount)
 	local count = stock.requestFiltered("Pocket", {
-		_requestCount = item.maxCount,
+		_requestCount = amount or item.maxCount,
 		name = item.name,
 		displayName = item.displayName
 	})
@@ -86,7 +86,7 @@ local function listenForRequests()
 		elseif message.command == "emptyPocket" then
 			emptyPocket(message.sender)
 		elseif message.command == "pocketRequest" then
-			pocketRequest(message.sender, message.arguments.item)
+			pocketRequest(message.sender, message.arguments.item, message.arguments.amount)
 		elseif message.command == "getStock" then
 			rednet.send(
 				id,

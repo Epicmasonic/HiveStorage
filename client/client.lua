@@ -66,7 +66,7 @@ while true do
 	elseif key == keys.right then
 		currentSelection = pages.collection.navagate.right(modifiedItemList, currentSelection)
 	elseif key == keys.s then
-		-- So that the s you used to open the search bar doesn't get put into it as well
+		-- So that the key you used to open the search bar doesn't get put into it as well
 		local releasedKey
 		repeat
 			_, releasedKey = os.pullEvent("key_up")
@@ -86,8 +86,25 @@ while true do
 		server.emptyPocket()
 		ui.infoLog("Emptied the pocket")
 	elseif key == keys.enter then
-		server.requestItem(modifiedItemList[currentSelection])
-		ui.infoLog("Requested "..modifiedItemList[currentSelection].displayName)
+		local requestedItem = modifiedItemList[currentSelection]
+		
+		
+		-- So that the key you used to open the search bar doesn't get put into it as well
+		local releasedKey
+		repeat
+			_, releasedKey = os.pullEvent("key_up")
+		until releasedKey == keys.enter
+
+		term.setCursorPos(1, 1)
+		write("Amount: ")
+		local requestedAmount = tonumber(read())
+		
+		server.requestItem(requestedItem, requestedAmount)
+		if requestedAmount then 
+			ui.infoLog("Requested "..requestedAmount.." copies of "..requestedItem.displayName)
+		else
+			ui.infoLog("Requested "..requestedItem.displayName)
+		end
 --	else
 --		ui.infoLog("Key code pressed: " .. keys.getName(param))
 	end
