@@ -50,7 +50,7 @@ local function reloadItemList()
 	local selectedItem = modifiedItemList[currentSelection]
 	
 	itemList = server.getItems()
-	modifiedItemList = data.copyTable(itemList)
+	modifiedItemList = data.copyTable(data.search(itemList, searchQuery))
 	sort(modifiedItemList, sortMode)
 	currentSelection = findItemSelection(modifiedItemList, selectedItem)
 end
