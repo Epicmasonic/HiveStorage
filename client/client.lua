@@ -87,7 +87,7 @@ while true do
 		
 		resultSize = #data.search(modifiedItemList, searchQuery)
 		if resultSize == 0 then
-			ui.infoLog("No results found...")
+			ui.infoLog("No items found...")
 			searchQuery = ""
 		else
 			ui.infoLog("Found "..resultSize.." items!")
