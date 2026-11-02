@@ -34,7 +34,16 @@ local function search(itemList, query)
 			end
 		end
 	elseif firstChar == "#" then
-		
+		query = string.sub(query, 2)
+		for _, item in ipairs(itemList) do
+			for _, tag in ipairs(item.tags) do
+				local _, cleanTag = splitItemId(tag)
+				if string.find(cleanTag, query) then
+					table.insert(result, item)
+					break
+				end
+			end
+		end
 	else
 		for _, item in ipairs(itemList) do
 			local itemName = string.lower(item.displayName)

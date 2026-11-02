@@ -50,7 +50,7 @@ local function reloadItemList()
 	local selectedItem = modifiedItemList[currentSelection]
 	
 	itemList = server.getItems()
-	modifiedItemList = data.copyTable(itemList)
+	modifiedItemList = data.copyTable(data.search(itemList, searchQuery))
 	sort(modifiedItemList, sortMode)
 	currentSelection = findItemSelection(modifiedItemList, selectedItem)
 end
@@ -84,12 +84,20 @@ while true do
 		term.setCursorPos(1, 1)
 		write("Search: ")
 		searchQuery = read(nil, searchHistory, nil, searchQuery)
-		table.insert(searchHistory, searchQuery)
+		
+		resultSize = #data.search(modifiedItemList, searchQuery)
+		if resultSize == 0 then
+			ui.infoLog("No items found...")
+			searchQuery = ""
+		else
+			ui.infoLog("Found "..resultSize.." items!")
+			table.insert(searchHistory, searchQuery)
+		end
 		
 		reloadItemList()
 	elseif key == keys.f then
 		server.emptyPocket()
-		ui.infoLog("Emptied the pocket")
+		ui.infoLog("Emptied the pocket.")
 	elseif key == keys.enter then
 		local requestedItem = modifiedItemList[currentSelection]
 		
@@ -105,9 +113,9 @@ while true do
 		
 		server.requestItem(requestedItem, requestedAmount)
 		if requestedAmount then
-			ui.infoLog("Requested "..requestedAmount.."x "..requestedItem.displayName)
+			ui.infoLog("Requested "..requestedAmount.."x "..requestedItem.displayName..".")
 		else
-			ui.infoLog("Requested "..requestedItem.displayName)
+			ui.infoLog("Requested "..requestedItem.displayName..".")
 		end
 		
 		reloadItemList()
