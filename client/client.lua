@@ -57,6 +57,14 @@ end
 
 while true do
 	term.clear()
+	if #modifiedItemList == 0 then
+		modifiedItemList = data.copyTable(server.getItems())
+		
+		if #modifiedItemList == 0 then
+			ui.infoLog("No items in storage!?")
+			break
+		end
+	end
 	pages.collection.draw(modifiedItemList, currentSelection)
 	
 	local _, key = os.pullEvent("key")
