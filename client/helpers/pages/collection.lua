@@ -30,7 +30,7 @@ local function drawFullItemOverview(startX, startY, width, height, items, select
 	end
 	
 	term.setCursorPos(startX + 2, startY)
-	write(" "..math.floor(selected / pageSize)+1 .." / "..math.floor(#items / pageSize)+1 .." ")
+	write(" "..math.floor((selected - 1) / pageSize)+1 .." / "..math.floor(#items / pageSize)+1 .." ")
 end
 
 local function navagateUp(itemList, selection)
