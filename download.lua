@@ -70,7 +70,7 @@ if wantsServer then
 	if wantsClient then basePath = basePath.."/server" end
 
 	for _, file in ipairs(serverFiles) do
-		shell.run("wget https://github.com/Epicmasonic/HiveStorage/raw/main/server/"..file.." "..basePath.."/"..file)
+		shell.run("wget https://github.com/Epicmasonic/HiveStorage/raw/security/server/"..file.." "..basePath.."/"..file)
 	end
 end
 
@@ -79,6 +79,6 @@ if wantsClient then
 	if wantsServer then basePath = basePath.."/client" end
 
 	for _, file in ipairs(clientFiles) do
-		shell.run("wget https://github.com/Epicmasonic/HiveStorage/raw/main/client/"..file.." "..basePath.."/"..file)
+		shell.run("wget https://github.com/Epicmasonic/HiveStorage/raw/security/client/"..file.." "..basePath.."/"..file)
 	end
 end
