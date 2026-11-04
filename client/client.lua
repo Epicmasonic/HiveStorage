@@ -99,7 +99,7 @@ local function inputLoop()
 	
 			term.setCursorPos(1, 1)
 			write("Search: ")
-			searchQuery = read(nil, searchHistory, nil, searchQuery)
+			searchQuery = read(nil, searchHistory)
 			
 			resultSize = #data.search(modifiedItemList, searchQuery)
 			if resultSize == 0 then
