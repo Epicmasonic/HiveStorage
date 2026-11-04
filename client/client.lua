@@ -57,7 +57,7 @@ end
 
 local function refreshLoop()
 	while true do
-		sleep(10) -- Not sure how long to wait between auto refreshing. If it's to short I'll DoS myself but if it's too long I'll be waiting forever...
+		sleep(10) -- Not sure how long to wait between auto refreshing. If it's too short I'll DoS myself but if it's too long I'll be waiting forever...
 		reloadItemList()
 	end
 end
@@ -66,7 +66,7 @@ local function inputLoop()
 	while true do
 		term.clear()
 		if #modifiedItemList == 0 then
-			modifiedItemList = data.copyTable(server.getItems())
+			modifiedItemList = sort(data.copyTable(server.getItems()), sortMode)
 			
 			if #modifiedItemList == 0 then
 				ui.infoLog("No items in storage!?")
@@ -99,7 +99,7 @@ local function inputLoop()
 	
 			term.setCursorPos(1, 1)
 			write("Search: ")
-			searchQuery = read(nil, searchHistory, nil, searchQuery)
+			searchQuery = read(nil, searchHistory)
 			
 			resultSize = #data.search(modifiedItemList, searchQuery)
 			if resultSize == 0 then
