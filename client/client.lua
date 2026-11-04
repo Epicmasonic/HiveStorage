@@ -55,74 +55,92 @@ local function reloadItemList()
 	currentSelection = findItemSelection(modifiedItemList, selectedItem)
 end
 
-while true do
-	term.clear()
-	pages.collection.draw(modifiedItemList, currentSelection)
-	
-	local _, key = os.pullEvent("key")
-	if key == keys.q then
-		ui.infoLog("Quitting program.")
-		break
-	elseif key == keys.r then
-		ui.infoLog("Reloading items.")
+local function refreshLoop()
+	while true do
+		sleep(10) -- Not sure how long to wait between auto refreshing. If it's to short I'll DoS myself but if it's too long I'll be waiting forever...
 		reloadItemList()
-	elseif key == keys.up then
-		currentSelection = pages.collection.navagate.up(modifiedItemList, currentSelection)
-	elseif key == keys.down then
-		currentSelection = pages.collection.navagate.down(modifiedItemList, currentSelection)
-	elseif key == keys.left then
-		currentSelection = pages.collection.navagate.left(modifiedItemList, currentSelection)
-	elseif key == keys.right then
-		currentSelection = pages.collection.navagate.right(modifiedItemList, currentSelection)
-	elseif key == keys.s then
-		-- So that the key you used to open the search bar doesn't get put into it as well
-		local releasedKey
-		repeat
-			_, releasedKey = os.pullEvent("key_up")
-		until releasedKey == keys.s
-
-		term.setCursorPos(1, 1)
-		write("Search: ")
-		searchQuery = read(nil, searchHistory, nil, searchQuery)
-		
-		resultSize = #data.search(server.getItems(), searchQuery)
-		if resultSize == 0 then
-			ui.infoLog("No items found...")
-			searchQuery = ""
-		else
-			ui.infoLog("Found "..resultSize.." items!")
-			table.insert(searchHistory, searchQuery)
-		end
-		
-		reloadItemList()
-	elseif key == keys.f then
-		server.emptyPocket()
-		ui.infoLog("Emptied the pocket.")
-	elseif key == keys.enter then
-		local requestedItem = modifiedItemList[currentSelection]
-		
-		-- So that the key you used to open the search bar doesn't get put into it as well
-		local releasedKey
-		repeat
-			_, releasedKey = os.pullEvent("key_up")
-		until releasedKey == keys.enter
-
-		term.setCursorPos(1, 1)
-		write("Amount: ")
-		local requestedAmount = tonumber(read())
-		
-		server.requestItem(requestedItem, requestedAmount)
-		if requestedAmount then
-			ui.infoLog("Requested "..requestedAmount.."x "..requestedItem.displayName..".")
-		else
-			ui.infoLog("Requested "..requestedItem.displayName..".")
-		end
-		
-		reloadItemList()
---	else
---		ui.infoLog("Key code pressed: " .. keys.getName(param))
 	end
 end
 
+local function inputLoop()
+	while true do
+		term.clear()
+		if #modifiedItemList == 0 then
+			modifiedItemList = data.copyTable(server.getItems())
+			
+			if #modifiedItemList == 0 then
+				ui.infoLog("No items in storage!?")
+				break
+			end
+		end
+		pages.collection.draw(modifiedItemList, currentSelection)
+		
+		local _, key = os.pullEvent("key")
+		if key == keys.q then
+			ui.infoLog("Quitting program.")
+			break
+		elseif key == keys.r then
+			ui.infoLog("Reloading items.")
+			reloadItemList()
+		elseif key == keys.up then
+			currentSelection = pages.collection.navagate.up(modifiedItemList, currentSelection)
+		elseif key == keys.down then
+			currentSelection = pages.collection.navagate.down(modifiedItemList, currentSelection)
+		elseif key == keys.left then
+			currentSelection = pages.collection.navagate.left(modifiedItemList, currentSelection)
+		elseif key == keys.right then
+			currentSelection = pages.collection.navagate.right(modifiedItemList, currentSelection)
+		elseif key == keys.s then
+			-- So that the key you used to open the search bar doesn't get put into it as well
+			local releasedKey
+			repeat
+				_, releasedKey = os.pullEvent("key_up")
+			until releasedKey == keys.s
+	
+			term.setCursorPos(1, 1)
+			write("Search: ")
+			searchQuery = read(nil, searchHistory, nil, searchQuery)
+			
+			resultSize = #data.search(modifiedItemList, searchQuery)
+			if resultSize == 0 then
+				ui.infoLog("No items found...")
+				searchQuery = ""
+			else
+				ui.infoLog("Found "..resultSize.." items!")
+				table.insert(searchHistory, searchQuery)
+			end
+			
+			reloadItemList()
+		elseif key == keys.f then
+			server.emptyPocket()
+			ui.infoLog("Emptied the pocket.")
+		elseif key == keys.enter then
+			local requestedItem = modifiedItemList[currentSelection]
+			
+			-- So that the key you used to open the search bar doesn't get put into it as well
+			local releasedKey
+			repeat
+				_, releasedKey = os.pullEvent("key_up")
+			until releasedKey == keys.enter
+	
+			term.setCursorPos(1, 1)
+			write("Amount: ")
+			local requestedAmount = tonumber(read())
+			
+			server.requestItem(requestedItem, requestedAmount)
+			if requestedAmount then
+				ui.infoLog("Requested "..requestedAmount.."x "..requestedItem.displayName..".")
+			else
+				ui.infoLog("Requested "..requestedItem.displayName..".")
+			end
+			
+			reloadItemList()
+	--	else
+	--		ui.infoLog("Key code pressed: " .. keys.getName(param))
+		end
+	end
+end
+
+parallel.waitForAny(refreshLoop, inputLoop)
 term.clear()
 term.setCursorPos(1, 1)
