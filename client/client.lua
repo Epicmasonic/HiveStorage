@@ -85,7 +85,7 @@ while true do
 		write("Search: ")
 		searchQuery = read(nil, searchHistory, nil, searchQuery)
 		
-		resultSize = #data.search(modifiedItemList, searchQuery)
+		resultSize = #data.search(server.getItems(), searchQuery)
 		if resultSize == 0 then
 			ui.infoLog("No items found...")
 			searchQuery = ""
