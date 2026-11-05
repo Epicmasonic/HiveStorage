@@ -15,6 +15,8 @@ end
 
 local stock = peripheral.find("Create_StockTicker")
 local pocket = peripheral.find("Create_Packager")
+local inventory = peripheral.find("inventoryManager")
+
 local modem = findActualModem()
 local modemName = peripheral.getName(modem)
 rednet.open(modemName)
@@ -55,6 +57,8 @@ local function ping(sender, id)
 	)
 	log("Got pinged", sender)
 end
+
+local pocketRequests = {}
 
 local function emptyPocket(sender)
 	pocketRequests[#pocketRequests + 1] = {
@@ -158,7 +162,13 @@ local function listenForRequests()
 end
 
 log("Started running", "Server", true)
-local ok, errorMessage = xpcall(listenForRequests, debug.traceback) -- I'm not super sure what a `xpcall` is but Copilot said to use it so that the modem will actually close when the program breaks. -- It looks a lot like a try catch?
+ -- I'm not super sure what a `xpcall` is but Copilot said to use it so that the modem will actually close when the program breaks. -- It looks a lot like a try catch?
+local ok, errorMessage = xpcall(
+	function()
+		parallel.waitForAll(listenForRequests, processPocketRequests)
+	end,
+	debug.traceback
+)
 
 rednet.close(modemName)
 
