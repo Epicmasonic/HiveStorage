@@ -1,69 +1,69 @@
 ---@diagnostic disable: undefined-global, undefined-field, trailing-space
 
 local function findWirelessModem()
-	return peripheral.find("modem", function(_, modem)
-		return modem.isWireless()
-	end)
+    return peripheral.find("modem", function(_, modem)
+        return modem.isWireless()
+    end)
 end
 
 local modemName = peripheral.getName(findWirelessModem())
 
 local myName
 if os.getComputerLabel() then
-	myName = os.getComputerLabel()
+    myName = os.getComputerLabel()
 else
-	myName = "Computer ID "..textutils.serialize(os.getComputerID())
+    myName = "Computer ID "..textutils.serialize(os.getComputerID())
 end
 
 local function getItems()
-	rednet.open(modemName)
-	rednet.broadcast(
-		{
-			sender = myName,
-			command = "getStock"
-		},
-		"HiveStorage"
-	)
-	
-	local message
-	repeat
-		_, message = rednet.receive("HiveStorage")
-	until message and message.arguments.successful == "getStock"
-	rednet.close()
-	
-	return message.arguments.returnValue
+    rednet.open(modemName)
+    rednet.broadcast(
+        {
+            sender = myName,
+            command = "getStock"
+        },
+        "HiveStorage"
+    )
+    
+    local message
+    repeat
+        _, message = rednet.receive("HiveStorage")
+    until message and message.arguments.successful == "getStock"
+    rednet.close()
+    
+    return message.arguments.returnValue
 end
 
 local function emptyPocket()
-	rednet.open(modemName)
-	rednet.broadcast(
-		{
-			sender = myName,
-			command = "emptyPocket"
-		},
-		"HiveStorage"
-	)
-	rednet.close()
+    rednet.open(modemName)
+    rednet.broadcast(
+        {
+            sender = myName,
+            command = "emptyPocket"
+        },
+        "HiveStorage"
+    )
+    rednet.close()
 end
 
 local function requestItem(item, amount)
-	rednet.open(modemName)
-	rednet.broadcast(
-		{
-			sender = myName,
-			command = "pocketRequest",
-			arguments = {
-				item = item,
-				amount = amount
-			}
-		},
-		"HiveStorage"
-	)
-	rednet.close()
+    rednet.open(modemName)
+    rednet.broadcast(
+        {
+            sender = myName,
+            command = "pocketRequest",
+            arguments = {
+                item = item,
+                amount = amount
+            }
+        },
+        "HiveStorage"
+    )
+    rednet.close()
 end
 
 return {
-	getItems = getItems,
-	emptyPocket = emptyPocket,
-	requestItem = requestItem
+    getItems = getItems,
+    emptyPocket = emptyPocket,
+    requestItem = requestItem
 }
