@@ -17,7 +17,7 @@ local clientFiles = {
 	"helpers/pages/collection.lua"
 }
 
-print("Do you want to instead the [S]erver, the [C]lient or [B]oth? (S/C/B)\n")
+print("Do you want to install the [S]erver, the [C]lient or [B]oth? (S/C/B)\n")
 
 local wantsServer = false
 local wantsClient = false

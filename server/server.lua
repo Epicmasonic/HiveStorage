@@ -162,9 +162,13 @@ local function listenForRequests()
 end
 
 log("Started running", "Server", true)
-local ok, errorMessage = xpcall(function()
-	parallel.waitForAll(listenForRequests, processPocketRequests)
-end, debug.traceback) -- xpcall is similar to try/catch: it catches errors so the modem can be closed cleanly.
+ -- I'm not super sure what a `xpcall` is but Copilot said to use it so that the modem will actually close when the program breaks. -- It looks a lot like a try catch?
+local ok, errorMessage = xpcall(
+	function()
+		parallel.waitForAll(listenForRequests, processPocketRequests)
+	end,
+	debug.traceback
+)
 
 rednet.close(modemName)
 
