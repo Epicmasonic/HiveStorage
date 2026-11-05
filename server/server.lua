@@ -61,7 +61,7 @@ local function emptyPocket(sender)
 	repeat
 		pocket.makePackage()
 	until next(pocket.list()) == nil
-	log("Emptied the pocket", sender)
+	log("Emptied your inventory", sender)
 end
 
 local function pocketRequest(sender, item, amount)
