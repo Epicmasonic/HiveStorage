@@ -74,11 +74,11 @@ local function runEmptyPocket(sender)
 		end
 	end
 	
-	pocket.setAddress("Storage")
+	pocket.setAddress("(GroovyProto) Storage")
 	repeat
 		pocket.makePackage()
 	until next(pocket.list()) == nil
-	log("Emptied the pocket", sender)
+	log("Emptied your inventory", sender)
 end
 
 local function pocketRequest(sender, item, amount)
@@ -99,13 +99,13 @@ local function processPocketRequests()
 			runEmptyPocket(request.sender)
 		else
 			local item = request.item
-			local count = stock.requestFiltered("Pocket", {
+			local count = stock.requestFiltered("(GroovyProto) Inventory", {
 				_requestCount = request.amount,
 				name = item.name,
 				displayName = item.displayName
 			})
 
-			log("Sent "..count.." copies of "..item.displayName.." to the pocket", request.sender)
+			log("Sent "..count.." copies of "..item.displayName.." to your inventory", request.sender)
 
 			if inventory and count > 0 then
 				while true do
