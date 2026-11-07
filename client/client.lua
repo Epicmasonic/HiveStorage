@@ -101,7 +101,7 @@ local function inputLoop()
             write("Search: ")
             searchQuery = read(nil, searchHistory)
             
-            resultSize = #data.search(server.getItems()), searchQuery)
+            resultSize = #data.search(server.getItems(), searchQuery)
             if resultSize == 0 then
                 ui.infoLog("No items found...")
                 searchQuery = ""
