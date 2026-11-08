@@ -81,12 +81,13 @@ local function runEmptyPocket(sender)
     log("Emptied your inventory", sender)
 end
 
-local function pocketRequest(sender, item, amount)
+local function pocketRequest(sender, item, amount, address)
     pocketRequests[#pocketRequests + 1] = {
         command = "pocketRequest",
         sender = sender,
         item = item,
-        amount = amount or item.maxCount
+        amount = amount or item.maxCount,
+        address = address or "(GroovyProto) Inventory"
     }
 end
 
@@ -99,7 +100,7 @@ local function processPocketRequests()
             runEmptyPocket(request.sender)
         else
             local item = request.item
-            local count = stock.requestFiltered("(GroovyProto) Inventory", {
+            local count = stock.requestFiltered(request.address, {
                 _requestCount = request.amount,
                 name = item.name,
                 displayName = item.displayName
