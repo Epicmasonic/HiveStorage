@@ -144,8 +144,8 @@ local function inputLoop()
             end
             
             reloadItemList()
-        else
-            ui.infoLog("Key code pressed: " .. keys.getName(key))
+--      else
+--          ui.infoLog("Key code pressed: " .. keys.getName(key))
         end
     end
 end
