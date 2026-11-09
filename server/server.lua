@@ -87,7 +87,7 @@ local function pocketRequest(sender, item, amount, address)
         sender = sender,
         item = item,
         amount = amount or item.maxCount,
-        address = address or "(GroovyProto) Inventory"
+        address = address
     }
 end
 
@@ -106,9 +106,9 @@ local function processPocketRequests()
                 displayName = item.displayName
             })
 
-            log("Sent "..count.." copies of "..item.displayName.." to your inventory", request.sender)
+            log("Sent "..count.." copies of "..item.displayName.." to "..request.address, request.sender)
 
-            if inventory and count > 0 then
+            if inventory and count > 0 and request.address == "(GroovyProto) Inventory" then
                 while true do
                     local foundCount = 0
                     for _, foundItem in ipairs(pocket.list()) do
@@ -141,7 +141,7 @@ local function listenForRequests()
         elseif message.command == "emptyPocket" then
             emptyPocket(message.sender)
         elseif message.command == "pocketRequest" then
-            pocketRequest(message.sender, message.arguments.item, message.arguments.amount)
+            pocketRequest(message.sender, message.arguments.item, message.arguments.amount, message.arguments.address)
         elseif message.command == "getStock" then
             rednet.send(
                 id,
