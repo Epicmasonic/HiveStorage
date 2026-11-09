@@ -114,20 +114,29 @@ local function inputLoop()
         elseif key == keys.f then
             server.emptyPocket()
             ui.infoLog("Emptied the pocket.")
-        elseif key == keys.enter then
+        elseif key == keys.enter or key == keys.rightShift then
             local requestedItem = modifiedItemList[currentSelection]
             
             -- So that the key you used to open the search bar doesn't get put into it as well
             local releasedKey
             repeat
                 _, releasedKey = os.pullEvent("key_up")
-            until releasedKey == keys.enter
+            until releasedKey == key
     
             term.setCursorPos(1, 1)
             write("Amount: ")
             local requestedAmount = tonumber(read())
             
-            server.requestItem(requestedItem, requestedAmount)
+            local requestedAddress = "(GroovyProto) Inventory"
+            if key == keys.rightShift then
+                term.setCursorPos(1, 1)
+                term.clearLine()
+                term.setCursorPos(1, 1) -- I forgot if clearLine moves the cursor
+                write("Address: ")
+                requestedAddress = read()
+            end
+            
+            server.requestItem(requestedItem, requestedAmount, requestedAddress)
             if requestedAmount then
                 ui.infoLog("Requested "..requestedAmount.."x "..requestedItem.displayName..".")
             else
@@ -135,8 +144,8 @@ local function inputLoop()
             end
             
             reloadItemList()
-    --	else
-    --		ui.infoLog("Key code pressed: " .. keys.getName(param))
+--      else
+--          ui.infoLog("Key code pressed: " .. keys.getName(key))
         end
     end
 end
