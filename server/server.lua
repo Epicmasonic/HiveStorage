@@ -8,9 +8,9 @@ term.setCursorPos(1, 1)
 ---------------------------------------------------
 
 local function findActualModem()
-	return peripheral.find("modem", function(_, modem)
-		return modem.isWireless() -- Check this modem is wireless.
-	end)
+    return peripheral.find("modem", function(_, modem)
+        return modem.isWireless() -- Check this modem is wireless.
+    end)
 end
 
 local stock = peripheral.find("Create_StockTicker")
@@ -28,13 +28,13 @@ rednet.open(modemName)
 --- @param sender string Who is sending the message (for debugging)
 --- @param fristTime boolean?
 local function log(message, sender, fristTime)
-	if not fristTime then
-		print("\n")
-	end
-	term.setTextColor(colors.gray)
-	print(sender.." ("..textutils.formatTime(os.time()).." Day "..os.day()..")")
-	term.setTextColor(colors.white)
-	write(message)
+    if not fristTime then
+        print("\n")
+    end
+    term.setTextColor(colors.gray)
+    print(sender.." ("..textutils.formatTime(os.time()).." Day "..os.day()..")")
+    term.setTextColor(colors.white)
+    write(message)
 end
 
 ---------------------------------------------------
@@ -42,35 +42,35 @@ end
 ---------------------------------------------------
 
 local function ping(sender, id)
-	rednet.send(
-		id,
-		{
-			sender = "Server",
-			command = "success",
-			arguments = {
-				successful = "ping"
-			}
-		},
-		"HiveStorage"
-	)
-	log("Got pinged", sender)
+    rednet.send(
+        id,
+        {
+            sender = "Server",
+            command = "success",
+            arguments = {
+                successful = "ping"
+            }
+        },
+        "HiveStorage"
+    )
+    log("Got pinged", sender)
 end
 
 local function emptyPocket(sender)
-	pocket.setAddress("Storage")
-	repeat
-		pocket.makePackage()
-	until next(pocket.list()) == nil
-	log("Emptied the pocket", sender)
+    pocket.setAddress("Storage")
+    repeat
+        pocket.makePackage()
+    until next(pocket.list()) == nil
+    log("Emptied the pocket", sender)
 end
 
 local function pocketRequest(sender, item, amount)
-	local count = stock.requestFiltered("Pocket", {
-		_requestCount = amount or item.maxCount,
-		name = item.name,
-		displayName = item.displayName
-	})
-	log("Sent "..count.." copies of "..item.displayName.." to the pocket", sender)
+    local count = stock.requestFiltered("Pocket", {
+        _requestCount = amount or item.maxCount,
+        name = item.name,
+        displayName = item.displayName
+    })
+    log("Sent "..count.." copies of "..item.displayName.." to the pocket", sender)
 end
 
 ---------------------------------------------------
@@ -78,33 +78,33 @@ end
 ---------------------------------------------------
 
 local function listenForRequests()
-	while true do
-		local id, message = rednet.receive("HiveStorage")
-		message.sender = message["sender"] or ("computer ID "..textutils.serialize(id))
-		if message.command == "ping" then
-			ping(message.sender, id)
-		elseif message.command == "emptyPocket" then
-			emptyPocket(message.sender)
-		elseif message.command == "pocketRequest" then
-			pocketRequest(message.sender, message.arguments.item, message.arguments.amount)
-		elseif message.command == "getStock" then
-			rednet.send(
-				id,
-				{
-					sender = "Server",
-					command = "success",
-					arguments = {
-						successful = "getStock",
-						returnValue = stock.stock(true)
-					}
-				},
-				"HiveStorage"
-			)
-			log("Checked storage", message.sender)
-		else
-			log("Got something weird:\n"..textutils.serialize(message), "Computer ID "..id)
-		end
-	end
+    while true do
+        local id, message = rednet.receive("HiveStorage")
+        message.sender = message["sender"] or ("computer ID "..textutils.serialize(id))
+        if message.command == "ping" then
+            ping(message.sender, id)
+        elseif message.command == "emptyPocket" then
+            emptyPocket(message.sender)
+        elseif message.command == "pocketRequest" then
+            pocketRequest(message.sender, message.arguments.item, message.arguments.amount)
+        elseif message.command == "getStock" then
+            rednet.send(
+                id,
+                {
+                    sender = "Server",
+                    command = "success",
+                    arguments = {
+                        successful = "getStock",
+                        returnValue = stock.stock(true)
+                    }
+                },
+                "HiveStorage"
+            )
+            log("Checked storage", message.sender)
+        else
+            log("Got something weird:\n"..textutils.serialize(message), "Computer ID "..id)
+        end
+    end
 end
 
 log("Started running", "Server", true)
@@ -113,11 +113,11 @@ local ok, errorMessage = xpcall(listenForRequests, debug.traceback) -- I'm not s
 rednet.close(modemName)
 
 if not ok then
-	term.clear()
-	term.setCursorPos(1,1)
-	
-	term.setTextColor(colors.gray)
-	print("Something went wrong! :(")
-	term.setTextColor(colors.white)
-	print(errorMessage)
+    term.clear()
+    term.setCursorPos(1,1)
+    
+    term.setTextColor(colors.gray)
+    print("Something went wrong! :(")
+    term.setTextColor(colors.white)
+    print(errorMessage)
 end
