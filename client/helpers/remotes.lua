@@ -46,7 +46,7 @@ local function emptyPocket()
     rednet.close()
 end
 
-local function requestItem(item, amount)
+local function requestItem(item, amount, address)
     rednet.open(modemName)
     rednet.broadcast(
         {
@@ -54,7 +54,8 @@ local function requestItem(item, amount)
             command = "pocketRequest",
             arguments = {
                 item = item,
-                amount = amount
+                amount = amount,
+                address = address
             }
         },
         "HiveStorage"
