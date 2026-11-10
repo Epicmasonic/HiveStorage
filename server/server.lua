@@ -74,7 +74,7 @@ local function runEmptyPocket(sender)
         end
     end
     
-    pocket.setAddress("(GroovyProto) Storage")
+    pocket.setAddress("Storage")
     repeat
         pocket.makePackage()
     until next(pocket.list()) == nil
@@ -108,7 +108,7 @@ local function processPocketRequests()
 
             log("Sent "..count.." copies of "..item.displayName.." to "..request.address, request.sender)
 
-            if inventory and count > 0 and request.address == "(GroovyProto) Inventory" then
+            if inventory and count > 0 and request.address == "Pocket" then
                 while true do
                     local foundCount = 0
                     for _, foundItem in ipairs(pocket.list()) do

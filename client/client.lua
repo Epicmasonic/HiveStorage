@@ -127,7 +127,7 @@ local function inputLoop()
             write("Amount: ")
             local requestedAmount = tonumber(read())
             
-            local requestedAddress = "(GroovyProto) Inventory"
+            local requestedAddress = "Pocket"
             if key == keys.rightShift then
                 term.setCursorPos(1, 1)
                 term.clearLine()
