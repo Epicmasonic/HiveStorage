@@ -15,6 +15,14 @@ local pages = {
 --                     Setup                     --
 ---------------------------------------------------
 
+local settingsFile = fs.open("./settings.json", "r")
+local settings = textutils.unserialiseJSON(settingsFile.readAll())
+settingsFile.close()
+settings = {
+    storageAddress = settings.storageAddress or "Storage",
+    inventoryAddress = settings.inventoryAddress or "Pocket"
+}
+
 local itemList = server.getItems()
 local modifiedItemList = data.copyTable(itemList) -- A copy of  `itemList` so the original can stay save while searching and whatever else I may add
 data.sort.byAmount(modifiedItemList)
@@ -127,7 +135,7 @@ local function inputLoop()
             write("Amount: ")
             local requestedAmount = tonumber(read())
             
-            local requestedAddress = "Pocket"
+            local requestedAddress = settings.inventoryAddress
             if key == keys.rightShift then
                 term.setCursorPos(1, 1)
                 term.clearLine()
