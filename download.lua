@@ -62,6 +62,12 @@ if warned then
     os.pullEvent("key")
 end
 
+print("What is the address of the frogport connected to your storage?")
+local storageAddress = read()
+
+print("What is the address of the frogport connected to your inventory?")
+local inventoryAddress = read()
+
 fs.delete("hiveStorage")
 if wantsServer then
     local basePath = "hiveStorage"
@@ -70,6 +76,13 @@ if wantsServer then
     for _, file in ipairs(serverFiles) do
         shell.run("wget https://github.com/Epicmasonic/HiveStorage/raw/main/server/"..file.." "..basePath.."/"..file)
     end
+    
+    local settingsFile = fs.open(basePath.."/settings.json", "w")
+    settingsFile.write(textutils.serialiseJSON({
+        storageAddress = storageAddress,
+        inventoryAddress = inventoryAddress
+    }))
+    settingsFile.close()
 end
 
 if wantsClient then
@@ -79,4 +92,11 @@ if wantsClient then
     for _, file in ipairs(clientFiles) do
         shell.run("wget https://github.com/Epicmasonic/HiveStorage/raw/main/client/"..file.." "..basePath.."/"..file)
     end
+    
+    local settingsFile = fs.open(basePath.."/settings.json", "w")
+    settingsFile.write(textutils.serialiseJSON({
+        storageAddress = storageAddress,
+        inventoryAddress = inventoryAddress
+    }))
+    settingsFile.close()
 end

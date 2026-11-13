@@ -21,6 +21,14 @@ local modem = findActualModem()
 local modemName = peripheral.getName(modem)
 rednet.open(modemName)
 
+local settingsFile = fs.open("./settings.json", "r")
+local settings = textutils.unserialiseJSON(settingsFile.readAll())
+settingsFile.close()
+settings = {
+    storageAddress = settings.storageAddress or "Storage",
+    inventoryAddress = settings.inventoryAddress or "Pocket"
+}
+
 ---------------------------------------------------
 --               Helper functions                --
 ---------------------------------------------------
@@ -74,7 +82,7 @@ local function runEmptyPocket(sender)
         end
     end
     
-    pocket.setAddress("Storage")
+    pocket.setAddress(settings.storageAddress)
     repeat
         pocket.makePackage()
     until next(pocket.list()) == nil
@@ -108,7 +116,7 @@ local function processPocketRequests()
 
             log("Sent "..count.." copies of "..item.displayName.." to "..request.address, request.sender)
 
-            if inventory and count > 0 and request.address == "Pocket" then
+            if inventory and count > 0 and request.address == settings.inventoryAddress then
                 while true do
                     local foundCount = 0
                     for _, foundItem in ipairs(pocket.list()) do
