@@ -1,0 +1,73 @@
+[
+    {
+        "address": "(GroovyProto) Sawmill",
+        "requestTimeout": 300,
+        "craftingRequest": false,
+        "mainOutput": {
+            "displayName": "Oak Log",
+            "itemGroups": {},
+            "mapColor": 9402184,
+            "mapColour": 9402184,
+            "maxCount": 64,
+            "name": "minecraft:oak_log",
+            "tags": {
+                "minecraft:completes_find_tree_tutorial": true,
+                "minecraft:logs": true,
+                "minecraft:logs_that_burn": true,
+                "minecraft:oak_logs": true
+            }
+        },
+        "inputs": [
+            {
+                "filter": "oak log",
+                "count": 1
+            }
+        ],
+        "outputs": [
+            {
+                "filter": "oak planks",
+                "count": 4
+            }
+        ]
+    },
+    {
+        "address": "(GroovyProto) Crafter",
+        "requestTimeout": 300,
+        "craftingRequest": true,
+        "mainOutput": {
+            "displayName": "Iron Ingot",
+            "itemGroups": {},
+            "maxCount": 64,
+            "name": "minecraft:iron_ingot",
+            "tags": {
+                "balm:ingots": true,
+                "forge:ingots/iron": true,
+                "minecraft:trim_materials": true,
+                "balm:iron_ingots": true,
+                "scguns:standard_bullet_material": true,
+                "minecraft:beacon_payment_items": true,
+                "c:ingots/iron": true,
+                "railways:internal/ingots/iron_ingots": true,
+                "forge:ingots": true,
+                "ae2:metal_ingots": true
+            }
+        },
+        "inputs": [
+            {
+                "filter": "iron essesence",
+                "count": 4
+            },
+            {},
+            {
+                "filter": "iron essesence",
+                "count": 4
+            }
+        ],
+        "outputs": [
+            {
+                "filter": "iron ingot",
+                "count": 6
+            }
+        ]
+    }
+]
